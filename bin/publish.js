@@ -66,7 +66,9 @@ function getConfig() {
   }
   if (!['release', 'beta', 'canary', 'lts'].includes(mainOptions.channel)) {
     throw new Error(
-      `Incorrect usage of publish:\n\tpublish <channel>\n\nChannel must be one of release|beta|canary|lts. Received ${mainOptions.channel}`
+      `Incorrect usage of publish:\n\tpublish <channel>\n\nChannel must be one of release|beta|canary|lts. Received ${
+        mainOptions.channel
+      }`
     );
   }
 
@@ -162,7 +164,9 @@ function assertGitIsClean() {
     if (options.force) {
       console.log(
         chalk.white(
-          `⚠️ ⚠️ ⚠️  Expected to publish npm tag ${options.distTag} from the git branch ${expectedChannelBranch}, but found ${foundBranch}`
+          `⚠️ ⚠️ ⚠️  Expected to publish npm tag ${
+            options.distTag
+          } from the git branch ${expectedChannelBranch}, but found ${foundBranch}`
         ) +
           chalk.yellow('\n\tPassed option: ') +
           chalk.white('--force') +
@@ -171,7 +175,9 @@ function assertGitIsClean() {
     } else {
       console.log(
         chalk.red(
-          `💥 Expected to publish npm tag ${options.distTag} from the git branch ${expectedChannelBranch}, but found ${foundBranch} 💥 \n\t`
+          `💥 Expected to publish npm tag ${
+            options.distTag
+          } from the git branch ${expectedChannelBranch}, but found ${foundBranch} 💥 \n\t`
         ) +
           chalk.grey('Use ') +
           chalk.white('--force') +

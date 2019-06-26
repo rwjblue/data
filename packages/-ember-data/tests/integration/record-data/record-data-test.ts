@@ -310,7 +310,11 @@ module('integration/record-data - Custom RecordData Implementations', function (
   });
 
   test("Record Data attribute settting", async function (assert) {
-    assert.expect(11);
+    let expectedCount = 11;
+    if (true) {
+      expectedCount = 12;
+    }
+    assert.expect(12);
     const personHash = {
       type: 'person',
       id: '1',
@@ -371,7 +375,11 @@ module('integration/record-data - Custom RecordData Implementations', function (
     person.set('name', 'new value');
     person.notifyPropertyChange('name');
     assert.equal(person.get('name'), 'new attribute');
-    assert.equal(calledGet, 3, 'called getAttr after notifyPropertyChange');
+    let expectedTimesToCallGet = 3;
+    if (true) {
+      expectedTimesToCallGet = 4;
+    }
+    assert.equal(calledGet, expectedTimesToCallGet, 'called getAttr after notifyPropertyChange');
     assert.deepEqual(person.changedAttributes(), { name: ['old', 'new'] }, 'changed attributes passes through RD value');
   });
 

@@ -5,6 +5,8 @@ import EmberObject, { computed, get } from '@ember/object';
 import { DEBUG } from '@glimmer/env';
 import { assert, warn, deprecate } from '@ember/debug';
 import { PromiseObject } from '../promise-proxies';
+import { errorsArrayToHash } from '../errors-utils';
+import { InvalidError } from '@ember-data/adapter/error';
 import Errors from '../model/errors';
 import {
   relationshipsByNameDescriptor,
@@ -59,6 +61,11 @@ const retrieveFromCurrentState = computed('currentState', function(key) {
   return get(this._internalModel.currentState, key);
 }).readOnly();
 
+const isValidRecordData = computed('errors.length', function(key) {
+  return !(this.get('errors.length') > 0);
+}).readOnly();
+
+const isValid = true ? isValidRecordData : retrieveFromCurrentState;
 /**
 
   The model class that all Ember Data records descend from.
@@ -70,6 +77,17 @@ const retrieveFromCurrentState = computed('currentState', function(key) {
   @uses Ember.Evented
 */
 const Model = EmberObject.extend(Evented, {
+  init() {
+    this._super(...arguments);
+    if (true) {
+      this._invalidRequests = [];
+    }
+  },
+
+  _notifyNetworkChanges: function() {
+    this.notifyPropertyChange('isValid');
+  },
+
   /**
     If this property is `true` the record is in the `empty`
     state. Empty is the first state all records enter after they have
@@ -237,7 +255,15 @@ const Model = EmberObject.extend(Evented, {
     @type {Boolean}
     @readOnly
   */
-  isValid: retrieveFromCurrentState,
+  isValid: isValid,
+
+  _markInvalidRequestAsClean() {
+    if (true) {
+      this._invalidRequests = [];
+      this._notifyNetworkChanges();
+    }
+  },
+
   /**
     If the record is in the dirty state this property will report what
     kind of change has caused it to move into the dirty
@@ -407,8 +433,43 @@ const Model = EmberObject.extend(Evented, {
         this.send('becameValid');
       }
     );
+    if (true) {
+      let recordData = recordDataFor(this);
+      let jsonApiErrors;
+      if (recordData.getErrors) {
+        jsonApiErrors = recordData.getErrors();
+        if (jsonApiErrors) {
+          let errorsHash = errorsArrayToHash(jsonApiErrors);
+          let errorKeys = Object.keys(errorsHash);
+
+          for (let i = 0; i < errorKeys.length; i++) {
+            errors._add(errorKeys[i], errorsHash[errorKeys[i]]);
+          }
+        }
+      }
+    }
     return errors;
   }).readOnly(),
+
+  invalidErrorsChanged(jsonApiErrors) {
+    if (true) {
+      this._clearErrorMessages();
+      let errors = errorsArrayToHash(jsonApiErrors);
+      let errorKeys = Object.keys(errors);
+
+      for (let i = 0; i < errorKeys.length; i++) {
+        this._addErrorMessageToAttribute(errorKeys[i], errors[errorKeys[i]]);
+      }
+    }
+  },
+
+  _addErrorMessageToAttribute(attribute, message) {
+    this.get('errors')._add(attribute, message);
+  },
+
+  _clearErrorMessages() {
+    this.get('errors')._clear();
+  },
 
   /**
     This property holds the `AdapterError` object with which
@@ -524,7 +585,7 @@ const Model = EmberObject.extend(Evented, {
     @param {Object} context
   */
   send(name, context) {
-    return this._internalModel.send(name, context);
+    return this._internalModel.send(name, context, true);
   },
 
   /**
@@ -714,6 +775,9 @@ const Model = EmberObject.extend(Evented, {
   */
   rollbackAttributes() {
     this._internalModel.rollbackAttributes();
+    if (true) {
+      this._markInvalidRequestAsClean();
+    }
   },
 
   /*
@@ -1457,7 +1521,11 @@ Model.reopenClass({
     }
 
     assert(
-      `The ${inverseType.modelName}:${inverseName} relationship declares 'inverse: null', but it was resolved as the inverse for ${this.modelName}:${name}.`,
+      `The ${
+        inverseType.modelName
+      }:${inverseName} relationship declares 'inverse: null', but it was resolved as the inverse for ${
+        this.modelName
+      }:${name}.`,
       !inverseOptions || inverseOptions.inverse !== null
     );
 

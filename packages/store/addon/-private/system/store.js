@@ -1315,7 +1315,9 @@ const Store = Service.extend({
     let adapter = this.adapterFor(internalModel.modelName);
 
     assert(
-      `You tried to load a hasMany relationship but you have no adapter (for ${internalModel.modelName})`,
+      `You tried to load a hasMany relationship but you have no adapter (for ${
+        internalModel.modelName
+      })`,
       adapter
     );
     assert(
@@ -1415,7 +1417,9 @@ const Store = Service.extend({
     let adapter = this.adapterFor(internalModel.modelName);
 
     assert(
-      `You tried to load a belongsTo relationship but you have no adapter (for ${internalModel.modelName})`,
+      `You tried to load a belongsTo relationship but you have no adapter (for ${
+        internalModel.modelName
+      })`,
       adapter
     );
     assert(
@@ -2164,7 +2168,9 @@ const Store = Service.extend({
     }
     if (!data) {
       assert(
-        `Your ${internalModel.modelName} record was saved to the server, but the response does not have an id and no id has been set client side. Records must have ids. Please update the server response to provide an id in the response or generate the id on the client side either before saving the record or while normalizing the response.`,
+        `Your ${
+          internalModel.modelName
+        } record was saved to the server, but the response does not have an id and no id has been set client side. Records must have ids. Please update the server response to provide an id in the response or generate the id on the client side either before saving the record or while normalizing the response.`,
         internalModel.id
       );
     }
@@ -2184,11 +2190,15 @@ const Store = Service.extend({
     @param {InternalModel} internalModel
     @param {Object} errors
   */
-  recordWasInvalid(internalModel, errors) {
+  recordWasInvalid(internalModel, parsedErrors, error) {
     if (DEBUG) {
       assertDestroyingStore(this, 'recordWasInvalid');
     }
-    internalModel.adapterDidInvalidate(errors);
+    if (true) {
+      internalModel.adapterDidInvalidate(parsedErrors, error);
+    } else {
+      internalModel.adapterDidInvalidate(parsedErrors);
+    }
   },
 
   /**
@@ -3272,9 +3282,8 @@ function _commit(adapter, store, operation, snapshot) {
     },
     function(error) {
       if (error instanceof InvalidError) {
-        let errors = serializer.extractErrors(store, modelClass, error, snapshot.id);
-
-        store.recordWasInvalid(internalModel, errors);
+        let parsedErrors = serializer.extractErrors(store, modelClass, error, snapshot.id);
+        store.recordWasInvalid(internalModel, parsedErrors, error);
       } else {
         store.recordWasError(internalModel, error);
       }
