@@ -19,6 +19,7 @@ import {
 } from '../../ts-interfaces/record-data-json-api';
 import { RelationshipRecordData } from '../../ts-interfaces/relationship-record-data';
 import { RecordDataStoreWrapper } from '../../ts-interfaces/record-data-store-wrapper';
+import { RECORD_DATA_ERRORS } from '@ember-data/canary-features';
 
 let nextBfsId = 1;
 
@@ -105,7 +106,7 @@ export default class RecordDataDefault implements RelationshipRecordData {
   }
 
   _clearErrors() {
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       if (this._errors) {
         this._errors = undefined;
         this.storeWrapper.notifyErrorsChange(this.modelName, this.id, this.clientId);
@@ -114,7 +115,7 @@ export default class RecordDataDefault implements RelationshipRecordData {
   }
 
   getErrors(): JsonApiValidationError[] {
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       let errors: JsonApiValidationError[] = this._errors || [];
       return errors;
     }
@@ -339,7 +340,7 @@ export default class RecordDataDefault implements RelationshipRecordData {
       }
     }
     this._inFlightAttributes = null;
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       if (errors) {
         this._errors = errors;
       }

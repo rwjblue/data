@@ -18,6 +18,8 @@ import recordDataFor from '../record-data-for';
 import Ember from 'ember';
 import InternalModel from './internal-model';
 import RootState from './states';
+import { RECORD_DATA_ERRORS } from '@ember-data/canary-features';
+
 const { changeProperties } = Ember;
 
 /**
@@ -79,7 +81,7 @@ const isValid = true ? isValidRecordData : retrieveFromCurrentState;
 const Model = EmberObject.extend(Evented, {
   init() {
     this._super(...arguments);
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       this._invalidRequests = [];
     }
   },
@@ -258,7 +260,7 @@ const Model = EmberObject.extend(Evented, {
   isValid: isValid,
 
   _markInvalidRequestAsClean() {
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       this._invalidRequests = [];
       this._notifyNetworkChanges();
     }
@@ -433,7 +435,7 @@ const Model = EmberObject.extend(Evented, {
         this.send('becameValid');
       }
     );
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       let recordData = recordDataFor(this);
       let jsonApiErrors;
       if (recordData.getErrors) {
@@ -452,7 +454,7 @@ const Model = EmberObject.extend(Evented, {
   }).readOnly(),
 
   invalidErrorsChanged(jsonApiErrors) {
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       this._clearErrorMessages();
       let errors = errorsArrayToHash(jsonApiErrors);
       let errorKeys = Object.keys(errors);
@@ -775,7 +777,7 @@ const Model = EmberObject.extend(Evented, {
   */
   rollbackAttributes() {
     this._internalModel.rollbackAttributes();
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       this._markInvalidRequestAsClean();
     }
   },

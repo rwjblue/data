@@ -22,7 +22,7 @@ import RecordData from '../../ts-interfaces/record-data';
 import { JsonApiResource, JsonApiValidationError } from '../../ts-interfaces/record-data-json-api';
 import { Record } from '../../ts-interfaces/record';
 import { Dict } from '../../types';
-import { parse } from 'url';
+import { RECORD_DATA_ERRORS } from '@ember-data/canary-features';
 
 // move to TS hacks module that we can delete when this is no longer a necessary recast
 type ManyArray = InstanceType<typeof ManyArray>;
@@ -113,7 +113,6 @@ export default class InternalModel {
   error: any;
 
   constructor(modelName: string, id: string | null, store, data, clientId) {
-
     this.id = id;
     this.store = store;
     this.modelName = modelName;
@@ -248,10 +247,9 @@ export default class InternalModel {
   }
 
   isValid() {
-    if (false) {
-      return this.currentState.isValid;
+    if (RECORD_DATA_ERRORS) {
     } else {
-      // assert here
+      return this.currentState.isValid;
     }
   }
 
@@ -909,7 +907,7 @@ export default class InternalModel {
       this._unhandledEvent(currentState, name, context);
     }
 
-    if (true) {
+    if (RECORD_DATA_ERRORS) {
       if (
         fromModel &&
         name === 'becameInvalid' &&
@@ -1248,16 +1246,16 @@ export default class InternalModel {
   }
 
   hasErrors() {
-    if (false) {
-      let errors = get(this.getRecord(), 'errors');
-      return errors.get('length') > 0;
-    } else {
+    if (RECORD_DATA_ERRORS) {
       if (this._recordData.getErrors) {
         return this._recordData.getErrors({}).length > 0;
       } else {
         let errors = get(this.getRecord(), 'errors');
         return errors.get('length') > 0;
       }
+    } else {
+      let errors = get(this.getRecord(), 'errors');
+      return errors.get('length') > 0;
     }
   }
 
@@ -1268,19 +1266,7 @@ export default class InternalModel {
     @private
   */
   adapterDidInvalidate(parsedErrors, error) {
-    if (false) {
-      let attribute;
-
-      for (attribute in parsedErrors) {
-        if (parsedErrors.hasOwnProperty(attribute)) {
-          this.addErrorMessageToAttribute(attribute, parsedErrors[attribute]);
-        }
-      }
-
-      this.send('becameInvalid');
-
-      this._recordData.commitWasRejected();
-    } else {
+    if (RECORD_DATA_ERRORS) {
       let attribute;
       if (error && parsedErrors) {
         if (!this._recordData.getErrors) {
@@ -1301,6 +1287,18 @@ export default class InternalModel {
         this.send('becameError');
         this._recordData.commitWasRejected({});
       }
+    } else {
+      let attribute;
+
+      for (attribute in parsedErrors) {
+        if (parsedErrors.hasOwnProperty(attribute)) {
+          this.addErrorMessageToAttribute(attribute, parsedErrors[attribute]);
+        }
+      }
+
+      this.send('becameInvalid');
+
+      this._recordData.commitWasRejected();
     }
   }
 
