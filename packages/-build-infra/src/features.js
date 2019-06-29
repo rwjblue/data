@@ -5,11 +5,14 @@ function getFeatures() {
     SAMPLE_FEATURE_FLAG: null,
     RECORD_DATA_ERRORS: null,
   };
-  let enableFeatures = process.env.EMBER_DATA_FEATURES;
-  // turn on all features when given the above environment variable
-  if (enableFeatures) {
-    for (let key in features) {
-      features[key] = true;
+
+  const FEATURE_OVERRIDES = process.env.EMBER_DATA_FEATURE_OVERRIDE;
+  if (FEATURE_OVERRIDES) {
+    const forcedFeatures = FEATURE_OVERRIDES.split(',');
+    for (var i = 0; i < forcedFeatures.length; i++) {
+      let featureName = forcedFeatures[i];
+
+      features[featureName] = true;
     }
   }
 
