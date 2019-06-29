@@ -115,9 +115,15 @@ export default class RecordDataDefault implements RelationshipRecordData {
   }
 
   getErrors(): JsonApiValidationError[] {
+    assert(
+      'Can not call getErrors unless the RECORD_DATA_ERRORS feature flag is on',
+      RECORD_DATA_ERRORS
+    );
     if (RECORD_DATA_ERRORS) {
       let errors: JsonApiValidationError[] = this._errors || [];
       return errors;
+    } else {
+      return [];
     }
   }
 

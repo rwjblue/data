@@ -1303,17 +1303,12 @@ export default class InternalModel {
   }
 
   notifyErrorsChange() {
-    let jsonApiErrors;
+    let invalidErrors;
     if (this._recordData.getErrors) {
-      jsonApiErrors = this._recordData.getErrors({}) || [];
+      invalidErrors = this._recordData.getErrors({}) || [];
     } else {
       return;
     }
-    // TODO NOW tighten this check
-    // don't think we need this
-    let invalidErrors: JsonApiValidationError[] = jsonApiErrors.filter(
-      err => err.source !== undefined && err.title !== undefined
-    ) as JsonApiValidationError[];
     this.notifyInvalidErrorsChange(invalidErrors);
   }
 
