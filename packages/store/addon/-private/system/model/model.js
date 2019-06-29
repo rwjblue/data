@@ -67,7 +67,7 @@ const isValidRecordData = computed('errors.length', function(key) {
   return !(this.get('errors.length') > 0);
 }).readOnly();
 
-const isValid = true ? isValidRecordData : retrieveFromCurrentState;
+const isValid = RECORD_DATA_ERRORS ? isValidRecordData : retrieveFromCurrentState;
 /**
 
   The model class that all Ember Data records descend from.

@@ -148,6 +148,7 @@ export default function attr(type, options) {
           );
         }
       }
+      debugger;
       if (RECORD_DATA_ERRORS) {
         let oldValue = this._internalModel._recordData.getAttr(key);
         if (oldValue !== value) {
